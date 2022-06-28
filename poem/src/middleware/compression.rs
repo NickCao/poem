@@ -65,6 +65,7 @@ impl<E: Endpoint> Endpoint for CompressionEndpoint<E> {
                     ContentCoding::BROTLI => Some(CompressionAlgo::BR),
                     ContentCoding::DEFLATE => Some(CompressionAlgo::DEFLATE),
                     ContentCoding::STAR | ContentCoding::GZIP => Some(CompressionAlgo::GZIP),
+                    ContentCoding::ZSTD => Some(CompressionAlgo::ZSTD),
                     _ => None,
                 }
             }
@@ -118,6 +119,7 @@ mod tests {
         test_algo(CompressionAlgo::BR).await;
         test_algo(CompressionAlgo::DEFLATE).await;
         test_algo(CompressionAlgo::GZIP).await;
+        test_algo(CompressionAlgo::ZSTD).await;
     }
 
     #[tokio::test]

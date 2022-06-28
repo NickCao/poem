@@ -23,6 +23,9 @@ pub enum CompressionAlgo {
 
     /// gzip
     GZIP,
+
+    /// zstd
+    ZSTD,
 }
 
 impl FromStr for CompressionAlgo {
@@ -33,6 +36,7 @@ impl FromStr for CompressionAlgo {
             "br" => CompressionAlgo::BR,
             "deflate" => CompressionAlgo::DEFLATE,
             "gzip" => CompressionAlgo::GZIP,
+            "zstd" => CompressionAlgo::ZSTD,
             _ => return Err(()),
         })
     }
@@ -44,6 +48,7 @@ impl CompressionAlgo {
             CompressionAlgo::BR => "br",
             CompressionAlgo::DEFLATE => "deflate",
             CompressionAlgo::GZIP => "gzip",
+            CompressionAlgo::ZSTD => "zstd",
         }
     }
 
@@ -61,6 +66,9 @@ impl CompressionAlgo {
             CompressionAlgo::GZIP => Box::pin(async_compression::tokio::bufread::GzipEncoder::new(
                 BufReader::new(reader),
             )),
+            CompressionAlgo::ZSTD => Box::pin(async_compression::tokio::bufread::ZstdEncoder::new(
+                BufReader::new(reader),
+            )),
         }
     }
 
@@ -76,6 +84,9 @@ impl CompressionAlgo {
                 async_compression::tokio::bufread::DeflateDecoder::new(BufReader::new(reader)),
             ),
             CompressionAlgo::GZIP => Box::pin(async_compression::tokio::bufread::GzipDecoder::new(
+                BufReader::new(reader),
+            )),
+            CompressionAlgo::ZSTD => Box::pin(async_compression::tokio::bufread::ZstdDecoder::new(
                 BufReader::new(reader),
             )),
         }
@@ -176,5 +187,6 @@ mod tests {
         test_algo(CompressionAlgo::BR).await;
         test_algo(CompressionAlgo::DEFLATE).await;
         test_algo(CompressionAlgo::GZIP).await;
+        test_algo(CompressionAlgo::ZSTD).await;
     }
 }
